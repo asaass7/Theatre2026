@@ -648,3 +648,27 @@ footer {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* ========== МОБИЛЬНОЕ МЕНЮ ========== */
+@media (max-width: 768px) {
+    .nav-menu {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    
+    .nav-link {
+        width: 100%;
+        text-align: center;
+        padding: 0.8rem;
+    }
+    
+    .profile-stats {
+        flex-direction: column;
+    }
+    
+    .booking-details {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
