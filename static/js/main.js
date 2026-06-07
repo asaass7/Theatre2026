@@ -277,3 +277,50 @@ window.alert = function(message) {
     }
     originalAlert(message);
 };
+
+// ========== СОХРАНЕНИЕ ПРЕДПОЧТЕНИЙ ПОЛЬЗОВАТЕЛЯ ==========
+// Сохраняем последний выбранный фильтр
+function saveFilterPreference(filter) {
+    localStorage.setItem('lastFilter', filter);
+}
+
+function loadFilterPreference() {
+    const savedFilter = localStorage.getItem('lastFilter');
+    if (savedFilter && savedFilter !== 'all') {
+        const filterBtn = document.querySelector(`.filter-btn[data-filter="${savedFilter}"]`);
+        if (filterBtn) {
+            filterBtn.click();
+        }
+    }
+}
+
+// Сохраняем последний поисковый запрос
+let searchTimeout;
+const searchInput_ = document.getElementById("searchInput");
+if (searchInput_) {
+    searchInput_.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            localStorage.setItem('lastSearch', e.target.value);
+        }, 500);
+    });
+    
+    // Восстанавливаем последний поиск
+    const lastSearch = localStorage.getItem('lastSearch');
+    if (lastSearch) {
+        searchInput_.value = lastSearch;
+        filterPerformances();
+    }
+}
+
+// Загружаем сохраненный фильтр при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+    loadFilterPreference();
+    
+    // Сохраняем фильтр при клике
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            saveFilterPreference(btn.dataset.filter);
+        });
+    });
+});
