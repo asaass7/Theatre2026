@@ -247,3 +247,33 @@ async function debouncedRequest(url, options = {}) {
     lastRequestTime = Date.now();
     return fetch(url, options);
 }
+
+// ========== ОБНОВЛЕНИЕ СВОБОДНЫХ МЕСТ В РЕАЛЬНОМ ВРЕМЕНИ ==========
+async function updateAvailableSeats(performanceId) {
+    try {
+        const response = await fetch(`/api/performances/${performanceId}`);
+        const performance = await response.json();
+        
+        // Находим карточку спектакля и обновляем отображение мест
+        const card = document.querySelector(`.book-btn[data-id="${performanceId}"]`)?.closest('.card');
+        if (card) {
+            const seatsElement = card.querySelector('.available-seats');
+            if (seatsElement) {
+                seatsElement.textContent = `💺 Свободно: ${performance.available_seats}`;
+            }
+        }
+        return performance.available_seats;
+    } catch (error) {
+        console.error('Ошибка обновления мест:', error);
+        return null;
+    }
+}
+
+// Обновляем места после успешного бронирования
+const originalAlert = alert;
+window.alert = function(message) {
+    if (message.includes('успешно') && currentPerformanceId) {
+        setTimeout(() => updateAvailableSeats(currentPerformanceId), 500);
+    }
+    originalAlert(message);
+};
