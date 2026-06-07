@@ -1,0 +1,544 @@
+/* Переменные и глобальные стили из вашего index.html, но с небольшими изменениями */
+:root {
+    --bg-primary: #fef7e8;
+    --bg-secondary: #fff0e0;
+    --text-primary: #2c1810;
+    --text-secondary: #5a3a2a;
+    --card-bg: #831717;
+    --card-text: #f5e5d4;
+    --header-bg: #4a1d1d;
+    --btn-bg: #fbc603;
+    --btn-hover: #e0aa04;
+    --border-color: #fbc603;
+    --modal-bg: #fffef7;
+    --input-bg: #fefaf5;
+    --accent: #fbc603;
+    --shadow: 0 4px 15px rgba(0,0,0,0.1);
+    --success: #4caf50;
+    --danger: #f44336;
+    --info: #2196f3;
+}
+
+body.dark {
+    --bg-primary: #1a120b;
+    --bg-secondary: #2c1e14;
+    --text-primary: #f5e6d3;
+    --text-secondary: #d4b48c;
+    --card-bg: #5a2e2e;
+    --card-text: #ffe0c4;
+    --header-bg: #2c1810;
+    --btn-bg: #c95a2e;
+    --btn-hover: #e07a4a;
+    --border-color: #c95a2e;
+    --modal-bg: #2c241c;
+    --input-bg: #3a2e24;
+    --accent: #c95a2e;
+    --shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+/* Кнопки */
+.theme-toggle, .scroll-top {
+    position: fixed;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: var(--btn-bg);
+    color: #4a1d1d;
+    border: none;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow);
+}
+
+.theme-toggle {
+    top: 20px;
+    right: 20px;
+}
+
+.scroll-top {
+    bottom: 30px;
+    right: 30px;
+    display: none;
+}
+
+.theme-toggle:hover, .scroll-top:hover {
+    transform: scale(1.1);
+    background: var(--btn-hover);
+}
+
+/* Flash сообщения */
+.flash-message {
+    padding: 15px;
+    margin: 20px auto;
+    max-width: 1200px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+    animation: slideIn 0.5s ease;
+}
+
+.flash-success {
+    background: var(--success);
+    color: white;
+}
+
+.flash-danger, .flash-error {
+    background: var(--danger);
+    color: white;
+}
+
+.flash-info {
+    background: var(--info);
+    color: white;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Хедер */
+header {
+    background: var(--header-bg);
+    color: #fbc603;
+    text-align: center;
+    padding: 2rem 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+header h1 {
+    font-size: 2.5rem;
+    letter-spacing: 2px;
+}
+
+/* Навигация */
+.nav-menu {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.nav-link {
+    color: #fbc603;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.nav-link:hover {
+    background: rgba(251,198,3,0.2);
+    transform: translateY(-2px);
+}
+
+.nav-link.active {
+    background: #fbc603;
+    color: #4a1d1d;
+    box-shadow: var(--shadow);
+}
+
+/* Герой */
+.hero {
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/static/images/theatre-bg.jpg') center/cover no-repeat;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+}
+
+.hero h2 {
+    font-size: 2rem;
+    background: rgba(0,0,0,0.6);
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    backdrop-filter: blur(4px);
+}
+
+section {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem;
+}
+
+h3 {
+    font-size: 2rem;
+    color: var(--accent);
+    border-left: 8px solid var(--accent);
+    padding-left: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Формы авторизации */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    padding: 2rem;
+}
+
+.auth-card {
+    background: var(--bg-secondary);
+    padding: 2rem;
+    border-radius: 30px;
+    box-shadow: var(--shadow);
+    max-width: 450px;
+    width: 100%;
+}
+
+.auth-card h2 {
+    text-align: center;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 25px;
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(251,198,3,0.2);
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 12px;
+    background: var(--btn-bg);
+    color: #4a1d1d;
+    border: none;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+    background: var(--btn-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.btn-secondary {
+    padding: 10px 20px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 2px solid var(--accent);
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: var(--accent);
+    color: #4a1d1d;
+}
+
+/* Карточки */
+.cards-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    justify-content: center;
+}
+
+.card {
+    width: 280px;
+    background: var(--card-bg);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.card-content {
+    padding: 15px;
+    color: white;
+}
+
+.card-content h4 {
+    color: var(--accent);
+    margin-bottom: 10px;
+}
+
+.card-content p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+}
+
+.btn-small {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 15px;
+    background: var(--btn-bg);
+    color: #4a1d1d;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.btn-small:hover {
+    background: var(--btn-hover);
+    transform: translateY(-2px);
+}
+
+/* Профиль */
+.profile-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem;
+}
+
+.profile-card, .bookings-card {
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+}
+
+.profile-info {
+    margin: 20px 0;
+}
+
+.info-item {
+    margin: 10px 0;
+    padding: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.booking-item {
+    background: var(--bg-primary);
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border-left: 4px solid var(--accent);
+}
+
+.btn-cancel {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 20px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+/* Фильтры и поиск */
+.filter-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 8px 20px;
+    border: 2px solid var(--accent);
+    background: transparent;
+    color: var(--text-primary);
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover, .filter-btn.active {
+    background: var(--accent);
+    color: #4a1d1d;
+    transform: translateY(-2px);
+}
+
+.search-box {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.search-box input {
+    padding: 12px 20px;
+    width: 300px;
+    border: 2px solid var(--accent);
+    border-radius: 25px;
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+/* Таймер */
+.timer-container {
+    text-align: center;
+    background: var(--bg-secondary);
+    padding: 2rem;
+    border-radius: 30px;
+    margin: 2rem 0;
+}
+
+.countdown {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--accent);
+    font-family: monospace;
+}
+
+/* Модальное окно */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(3px);
+}
+
+.modal-content {
+    background-color: var(--modal-bg);
+    padding: 30px;
+    border-radius: 28px;
+    max-width: 460px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 20px 35px rgba(0,0,0,0.3);
+    border-top: 8px solid var(--accent);
+}
+
+.close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 32px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #aaa;
+    transition: 0.2s;
+}
+
+.close:hover {
+    color: var(--danger);
+}
+
+.error-msg {
+    color: var(--danger);
+    font-size: 0.8rem;
+    margin-top: 5px;
+    display: block;
+}
+
+/* Анимации */
+.fade-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease;
+}
+
+.fade-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.loading {
+    text-align: center;
+    padding: 50px;
+    font-size: 1.2rem;
+    color: var(--accent);
+}
+
+footer {
+    background: var(--header-bg);
+    color: #fbc603;
+    text-align: center;
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .profile-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .hero h2 {
+        font-size: 1.5rem;
+    }
+    
+    header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .nav-link {
+        padding: 0.3rem 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    .countdown {
+        font-size: 1.5rem;
+    }
+    
+    .search-box input {
+        width: 90%;
+    }
+}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Спектакли{% endblock %}
+
+{% block content %}
+<section class="fade-scroll">
+    <h3>Афиша спектаклей</h3>
+    
+    <div class="filter-buttons">
+        <button class="filter-btn active" data-filter="all">Все</button>
+        <button class="filter-btn" data-filter="drama">Драма</button>
+        <button class="filter-btn" data-filter="comedy">Комедия</button>
+        <button class="filter-btn" data-filter="fantasy">Фэнтези</button>
+    </div>
+    
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 Поиск спектаклей...">
+    </div>
+    
+    <div class="cards-wrapper" id="performancesContainer">
+        <div class="loading">Загрузка...</div>
+    </div>
+</section>
+
+<!-- Модальное окно для бронирования -->
+<div id="bookingModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Бронирование билетов</h2>
+        <div id="bookingForm">
+            <div class="form-group">
+                <label>Количество билетов:</label>
+                <input type="number" id="ticketsCount" min="1" max="10" value="1">
+            </div>
+            <div class="form-group">
+                <label>Стоимость: <span id="totalPrice">0</span> ₽</label>
+            </div>
+            <button id="confirmBooking" class="btn-submit">Подтвердить бронь</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

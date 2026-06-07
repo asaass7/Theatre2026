@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Театр им. Александра Горбунова - {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+    <button class="scroll-top" id="scrollTopBtn"><i class="fas fa-arrow-up"></i></button>
+
+    <header>
+        <h1>Театр им. Александра Горбунова</h1>
+        <nav class="nav-menu">
+            <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" href="/">Главная</a>
+            <a class="nav-link {% if request.endpoint == 'performances_page' %}active{% endif %}" href="/performances">Спектакли</a>
+            {% if current_user.is_authenticated %}
+                <a class="nav-link {% if request.endpoint == 'profile' %}active{% endif %}" href="/profile">Личный кабинет</a>
+                <a class="nav-link" href="/logout">Выйти</a>
+            {% else %}
+                <a class="nav-link {% if request.endpoint == 'login' %}active{% endif %}" href="/login">Вход</a>
+                <a class="nav-link {% if request.endpoint == 'register' %}active{% endif %}" href="/register">Регистрация</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category if category != 'error' else 'danger' }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer id="contacts">
+        <p>Контактные данные: +7 999 999-99-99 | theatre@gorbunov.ru</p>
+        <p>Следите за нами в соцсетях: Instagram, VK, Facebook</p>
+        <p>&copy; 2026 Театр им. Александр Горбунова</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h2>Искусство на сцене — ваш вечер с нами</h2>
+</div>
+
+<section class="fade-scroll">
+    <h3>О театре</h3>
+    <p>Добро пожаловать в наш уютный и современный театр! Мы ставим яркие спектакли и любим делиться искусством со зрителями. Следите за афишей, выбирайте билеты и приходите наслаждаться нашим мастерством!</p>
+</section>
+
+<section class="fade-scroll">
+    <h3>Ближайшие спектакли</h3>
+    <div class="cards-wrapper" id="performancesPreview">
+        {% for perf in performances %}
+        <div class="card visible">
+            <div class="card-inner">
+                <img src="{{ url_for('static', filename='images/' + perf.image_url) }}" 
+                     onerror="this.src='https://placehold.co/250x150/831717/fbc603?text={{ perf.name }}'">
+                <div class="card-content">
+                    <h4>{{ perf.name }}</h4>
+                    <p><i class="fas fa-calendar"></i> {{ perf.date }} {{ perf.time }}</p>
+                    <p><i class="fas fa-tag"></i> {{ perf.price }} ₽</p>
+                    <a href="/performances" class="btn-small">Подробнее</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="fade-scroll">
+    <div class="timer-container">
+        <h3>🎭 До премьеры сезона осталось:</h3>
+        <div class="countdown" id="countdown">-- дн -- ч -- мин -- сек</div>
+    </div>
+</section>
+{% endblock %}

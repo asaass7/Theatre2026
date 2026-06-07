@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+<div class="auth-container fade-scroll">
+    <div class="auth-card">
+        <h2>🎭 Регистрация</h2>
+        <form method="POST" action="/register">
+            <div class="form-group">
+                <label>Имя и фамилия</label>
+                <input type="text" name="fullname" value="{{ request.form.fullname or '' }}" required>
+                {% if errors and errors.fullname %}
+                    <span class="error-msg">{{ errors.fullname }}</span>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label>Электронная почта</label>
+                <input type="email" name="email" value="{{ request.form.email or '' }}" required>
+                {% if errors and errors.email %}
+                    <span class="error-msg">{{ errors.email }}</span>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label>Телефон</label>
+                <input type="tel" name="phone" id="phone" value="{{ request.form.phone or '' }}" required>
+                {% if errors and errors.phone %}
+                    <span class="error-msg">{{ errors.phone }}</span>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" name="password" required>
+                {% if errors and errors.password %}
+                    <span class="error-msg">{{ errors.password }}</span>
+                {% endif %}
+            </div>
+            
+            <button type="submit" class="btn-submit">Зарегистрироваться</button>
+        </form>
+        <p>Уже есть аккаунт? <a href="/login">Войдите</a></p>
+    </div>
+</div>
+{% endblock %}
