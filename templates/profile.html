@@ -6,6 +6,18 @@
 <div class="profile-container fade-scroll">
     <div class="profile-card">
         <h2>👤 Личный кабинет</h2>
+        
+        <div class="profile-stats">
+            <div class="stat-card">
+                <div class="stat-number">{{ total_tickets }}</div>
+                <div class="stat-label">Всего билетов куплено</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ total_spent }} ₽</div>
+                <div class="stat-label">Потрачено всего</div>
+            </div>
+        </div>
+        
         <div class="profile-info">
             <div class="info-item">
                 <strong>Имя:</strong> {{ user.fullname }}
@@ -21,7 +33,7 @@
             </div>
         </div>
         
-        <button id="editProfileBtn" class="btn-secondary">Редактировать профиль</button>
+        <button id="editProfileBtn" class="btn-secondary">✏️ Редактировать профиль</button>
         
         <div id="editForm" style="display:none; margin-top: 20px;">
             <form method="POST" action="/profile/edit">
@@ -33,31 +45,74 @@
                     <label>Телефон</label>
                     <input type="tel" name="phone" value="{{ user.phone }}" required>
                 </div>
-                <button type="submit" class="btn-submit">Сохранить</button>
+                <button type="submit" class="btn-submit">💾 Сохранить</button>
                 <button type="button" id="cancelEditBtn" class="btn-secondary">Отмена</button>
             </form>
         </div>
     </div>
     
     <div class="bookings-card">
-        <h3>Мои бронирования</h3>
+        <h3>🎫 Мои бронирования</h3>
         <div id="bookingsList">
             {% if bookings %}
                 {% for booking in bookings %}
                 <div class="booking-item">
-                    <div><strong>{{ booking.performance.name }}</strong></div>
-                    <div>{{ booking.performance.date }} {{ booking.performance.time }}</div>
-                    <div>Билетов: {{ booking.tickets_count }} | Сумма: {{ booking.total_price }} ₽</div>
-                    <div>Статус: {{ booking.status }}</div>
+                    <div class="booking-title"><strong>{{ booking.performance.name }}</strong></div>
+                    <div class="booking-details">
+                        <span>📅 {{ booking.performance.date }} {{ booking.performance.time }}</span>
+                        <span>🎟️ {{ booking.tickets_count }} билетов</span>
+                        <span>💰 {{ booking.total_price }} ₽</span>
+                    </div>
+                    <div class="booking-status {{ booking.status }}">{{ booking.status }}</div>
                     {% if booking.status == 'active' %}
-                    <button class="btn-cancel" onclick="cancelBooking({{ booking.id }})">Отменить</button>
+                    <button class="btn-cancel" onclick="cancelBooking({{ booking.id }})">Отменить бронь</button>
                     {% endif %}
                 </div>
                 {% endfor %}
             {% else %}
-                <p>У вас пока нет бронирований</p>
+                <p>😔 У вас пока нет бронирований</p>
+                <a href="/performances" class="btn-small">🎭 Перейти к спектаклям</a>
             {% endif %}
         </div>
     </div>
 </div>
+
+<script>
+// Редактирование профиля
+const editBtn = document.getElementById("editProfileBtn");
+const editForm = document.getElementById("editForm");
+const cancelBtn = document.getElementById("cancelEditBtn");
+
+if (editBtn) {
+    editBtn.addEventListener("click", () => {
+        editForm.style.display = "block";
+        editBtn.style.display = "none";
+    });
+}
+
+if (cancelBtn) {
+    cancelBtn.addEventListener("click", () => {
+        editForm.style.display = "none";
+        editBtn.style.display = "inline-block";
+    });
+}
+
+// Отмена бронирования
+window.cancelBooking = async function(bookingId) {
+    if (confirm("⚠️ Вы уверены, что хотите отменить бронирование? Билеты будут возвращены в продажу.")) {
+        try {
+            const response = await fetch(`/api/bookings/${bookingId}`, { method: "DELETE" });
+            const result = await response.json();
+            if (response.ok) {
+                alert(result.message);
+                location.reload();
+            } else {
+                alert(result.error);
+            }
+        } catch (error) {
+            console.error("Ошибка:", error);
+        }
+    }
+};
+</script>
 {% endblock %}
