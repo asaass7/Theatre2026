@@ -16,3 +16,7 @@
 ```bash
 git clone https://github.com/yourusername/theatre-project.git
 cd theatre-project
+## 🔧 API Endpoints
+- `GET /api/performances` - получить спектакли
+- `POST /api/bookings` - создать бронирование
+- `DELETE /api/bookings/<id>` - отменить бронь
