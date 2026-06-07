@@ -234,3 +234,16 @@ function showNotification(message, type = 'info') {
     document.body.appendChild(notification);
     setTimeout(() => notification.remove(), 3000);
 }
+
+// ========== ОПТИМИЗАЦИЯ ЗАПРОСОВ ==========
+let lastRequestTime = 0;
+const REQUEST_DELAY = 300;
+
+async function debouncedRequest(url, options = {}) {
+    const now = Date.now();
+    if (now - lastRequestTime < REQUEST_DELAY) {
+        await new Promise(resolve => setTimeout(resolve, REQUEST_DELAY));
+    }
+    lastRequestTime = Date.now();
+    return fetch(url, options);
+}
