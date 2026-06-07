@@ -8,14 +8,12 @@ document.getElementById("themeToggle")?.addEventListener("click", () => {
     localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
 });
 
-// Скролл топ
+// Плавный скролл
 window.addEventListener("scroll", () => {
     const scrollBtn = document.getElementById("scrollTopBtn");
     if (scrollBtn) {
         scrollBtn.style.display = window.scrollY > 300 ? "block" : "none";
     }
-    
-    // Анимация при скролле
     document.querySelectorAll(".fade-scroll").forEach(el => {
         if (el.getBoundingClientRect().top < window.innerHeight - 100) {
             el.classList.add("visible");
@@ -50,41 +48,22 @@ function updateCountdown() {
 setInterval(updateCountdown, 1000);
 updateCountdown();
 
-// Редактирование профиля
-const editBtn = document.getElementById("editProfileBtn");
-const editForm = document.getElementById("editForm");
-const cancelBtn = document.getElementById("cancelEditBtn");
-
-if (editBtn) {
-    editBtn.addEventListener("click", () => {
-        editForm.style.display = "block";
-        editBtn.style.display = "none";
-    });
-}
-
-if (cancelBtn) {
-    cancelBtn.addEventListener("click", () => {
-        editForm.style.display = "none";
-        editBtn.style.display = "inline-block";
-    });
-}
-
-// Загрузка спектаклей через API
+// Загрузка спектаклей
 let currentPerformanceId = null;
+let currentPerformancePrice = 0;
 
 async function loadPerformances() {
     const container = document.getElementById("performancesContainer");
     if (!container) return;
     
-    container.innerHTML = '<div class="loading">Загрузка...</div>';
+    container.innerHTML = '<div class="loading">🎭 Загрузка...</div>';
     
     try {
         const response = await fetch("/api/performances");
         const performances = await response.json();
         renderPerformances(performances);
     } catch (error) {
-        console.error("Ошибка загрузки:", error);
-        container.innerHTML = '<div class="loading">Ошибка загрузки спектаклей</div>';
+        container.innerHTML = '<div class="loading">❌ Ошибка загрузки</div>';
     }
 }
 
@@ -92,69 +71,69 @@ function renderPerformances(performances) {
     const container = document.getElementById("performancesContainer");
     
     if (!performances || performances.length === 0) {
-        container.innerHTML = '<div class="loading">Спектакли не найдены</div>';
+        container.innerHTML = '<div class="loading">😔 Спектакли не найдены</div>';
         return;
     }
     
     container.innerHTML = performances.map(perf => `
-        <div class="card" data-category="${perf.category}" data-name="${perf.name}">
+        <div class="card">
             <div class="card-inner">
                 <img src="/static/images/${perf.image_url}" 
-                     onerror="this.src='https://placehold.co/280x180/831717/fbc603?text=${perf.name}'">
+                     onerror="this.src='https://placehold.co/300x200/831717/fbc603?text=${perf.name}'">
                 <div class="card-content">
                     <h4>${perf.name}</h4>
-                    <p><i class="fas fa-calendar"></i> ${perf.date} ${perf.time}</p>
-                    <p><i class="fas fa-tag"></i> ${perf.price} ₽</p>
-                    <p><i class="fas fa-chair"></i> Свободно мест: ${perf.available_seats}</p>
-                    <button class="btn-small book-btn" data-id="${perf.id}">Забронировать</button>
+                    <p>📅 ${perf.date} ${perf.time}</p>
+                    <p>💰 ${perf.price} ₽</p>
+                    <p>💺 Свободно: ${perf.available_seats}</p>
+                    <button class="btn-small book-btn" data-id="${perf.id}">🎫 Забронировать</button>
                 </div>
             </div>
         </div>
     `).join("");
     
-    // Добавляем обработчики для кнопок бронирования
     document.querySelectorAll(".book-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", async () => {
             const id = parseInt(btn.dataset.id);
-            openBookingModal(id);
+            const isLoggedIn = document.querySelector('a[href="/profile"]') !== null;
+            
+            if (!isLoggedIn) {
+                if (confirm("Для бронирования нужно войти в аккаунт. Перейти на страницу входа?")) {
+                    window.location.href = "/login";
+                }
+                return;
+            }
+            
+            await openBookingModal(id);
         });
     });
 }
 
-// Фильтрация и поиск
-const filterBtns = document.querySelectorAll(".filter-btn");
-const searchInput = document.getElementById("searchInput");
-
+// Фильтрация
 async function filterPerformances() {
     const activeFilter = document.querySelector(".filter-btn.active")?.dataset.filter || "all";
-    const searchTerm = searchInput?.value || "";
+    const searchTerm = document.getElementById("searchInput")?.value || "";
     
     try {
         const response = await fetch(`/api/performances?category=${activeFilter}&search=${encodeURIComponent(searchTerm)}`);
         const performances = await response.json();
         renderPerformances(performances);
     } catch (error) {
-        console.error("Ошибка фильтрации:", error);
+        console.error("Ошибка:", error);
     }
 }
 
-filterBtns.forEach(btn => {
+document.querySelectorAll(".filter-btn").forEach(btn => {
     btn.addEventListener("click", () => {
-        filterBtns.forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
         filterPerformances();
     });
 });
 
-if (searchInput) {
-    searchInput.addEventListener("input", debounce(filterPerformances, 300));
-}
+document.getElementById("searchInput")?.addEventListener("input", filterPerformances);
 
-// Модальное окно бронирования
+// Бронирование
 const modal = document.getElementById("bookingModal");
-const ticketsCountInput = document.getElementById("ticketsCount");
-const totalPriceSpan = document.getElementById("totalPrice");
-let currentPerformancePrice = 0;
 
 async function openBookingModal(performanceId) {
     currentPerformanceId = performanceId;
@@ -164,113 +143,94 @@ async function openBookingModal(performanceId) {
         const performance = await response.json();
         currentPerformancePrice = performance.price;
         
-        if (ticketsCountInput) {
-            ticketsCountInput.max = performance.available_seats;
+        const ticketsCount = document.getElementById("ticketsCount");
+        if (ticketsCount) {
+            ticketsCount.max = performance.available_seats;
+            ticketsCount.value = 1;
             updateTotalPrice();
         }
         
-        modal.style.display = "flex";
+        if (modal) modal.style.display = "flex";
     } catch (error) {
-        console.error("Ошибка загрузки спектакля:", error);
-        alert("Не удалось загрузить информацию о спектакле");
+        alert("Ошибка загрузки спектакля");
     }
 }
 
-if (ticketsCountInput) {
-    ticketsCountInput.addEventListener("input", updateTotalPrice);
-}
-
 function updateTotalPrice() {
-    const count = parseInt(ticketsCountInput.value) || 1;
-    totalPriceSpan.textContent = count * currentPerformancePrice;
+    const count = parseInt(document.getElementById("ticketsCount")?.value) || 1;
+    const totalSpan = document.getElementById("totalPrice");
+    if (totalSpan) totalSpan.textContent = count * currentPerformancePrice;
 }
 
-// Подтверждение бронирования
-const confirmBtn = document.getElementById("confirmBooking");
-if (confirmBtn) {
-    confirmBtn.addEventListener("click", async () => {
-        const ticketsCount = parseInt(ticketsCountInput.value);
+document.getElementById("ticketsCount")?.addEventListener("input", updateTotalPrice);
+
+document.getElementById("confirmBooking")?.addEventListener("click", async () => {
+    const ticketsCount = parseInt(document.getElementById("ticketsCount").value);
+    
+    try {
+        const response = await fetch("/api/bookings", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                performance_id: currentPerformanceId,
+                tickets_count: ticketsCount
+            })
+        });
         
-        try {
-            const response = await fetch("/api/bookings", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    performance_id: currentPerformanceId,
-                    tickets_count: ticketsCount
-                })
-            });
-            
-            const result = await response.json();
-            
-            if (response.ok) {
-                alert(result.message);
-                modal.style.display = "none";
-                filterPerformances(); // Обновляем список
-                if (typeof loadUserBookings === "function") loadUserBookings();
-            } else {
-                alert(result.error || "Ошибка бронирования");
-            }
-        } catch (error) {
-            console.error("Ошибка:", error);
-            alert("Произошла ошибка при бронировании");
+        const result = await response.json();
+        
+        if (response.ok) {
+            alert(result.message);
+            if (modal) modal.style.display = "none";
+            filterPerformances();
+        } else {
+            alert(result.error);
         }
-    });
-}
+    } catch (error) {
+        alert("Ошибка бронирования");
+    }
+});
 
 // Закрытие модального окна
-const closeBtns = document.querySelectorAll(".close");
-closeBtns.forEach(btn => {
+document.querySelectorAll(".close").forEach(btn => {
     btn.addEventListener("click", () => {
-        modal.style.display = "none";
+        if (modal) modal.style.display = "none";
     });
 });
 
 window.addEventListener("click", (e) => {
-    if (e.target === modal) {
-        modal.style.display = "none";
-    }
+    if (e.target === modal) modal.style.display = "none";
 });
 
-// Функция для отмены бронирования
-window.cancelBooking = async function(bookingId) {
-    if (confirm("Вы уверены, что хотите отменить бронирование?")) {
-        try {
-            const response = await fetch(`/api/bookings/${bookingId}`, {
-                method: "DELETE"
-            });
-            
-            const result = await response.json();
-            
-            if (response.ok) {
-                alert(result.message);
-                location.reload();
-            } else {
-                alert(result.error || "Ошибка отмены бронирования");
-            }
-        } catch (error) {
-            console.error("Ошибка:", error);
-            alert("Произошла ошибка");
-        }
-    }
-};
-
-// Загружаем спектакли при загрузке страницы
+// Инициализация
 if (document.getElementById("performancesContainer")) {
     loadPerformances();
 }
 
-// Вспомогательная функция debounce
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
+setTimeout(() => {
+    document.querySelectorAll(".fade-scroll").forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight - 100) {
+            el.classList.add("visible");
+        }
+    });
+}, 100);
+
+// ========== ГЛОБАЛЬНАЯ ОБРАБОТКА ОШИБОК ==========
+window.addEventListener('unhandledrejection', function(event) {
+    console.error('Необработанная ошибка:', event.reason);
+    showNotification('Произошла ошибка. Попробуйте позже.', 'error');
+});
+
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `flash-message flash-${type}`;
+    notification.textContent = message;
+    notification.style.position = 'fixed';
+    notification.style.top = '20px';
+    notification.style.right = '20px';
+    notification.style.zIndex = '9999';
+    notification.style.animation = 'slideIn 0.5s ease';
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
 }
